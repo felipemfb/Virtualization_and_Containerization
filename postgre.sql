@@ -1,0 +1,8 @@
+CREATE DATABASE listdb;
+
+\c listdb;
+
+CREATE TABLE items (
+  id SERIAL PRIMARY KEY,
+  text VARCHAR(255) NOT NULL
+);
