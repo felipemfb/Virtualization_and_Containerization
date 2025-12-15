@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: front
+      POSTGRES_DB: listdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - webapp-network
+
+  backend:
+    build: ./back
+    container_name: button_back
+    restart: always
+    environment:
+      DB_HOST: database
+      DB_USER: postgres
+      DB_PASS: front
+      DB_NAME: listdb
+      DB_PORT: 5432
+    depends_on:
+      - database
+    ports:
+      - "3000:3000"
+    networks:
+      - webapp-network
+
+  frontend:
+    build: ./front
+    container_name: button_front
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - webapp-network
+
+volumes:
+  db_data:
+
+networks:
+  webapp-network:
+    driver: bridge
